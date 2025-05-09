@@ -51,3 +51,6 @@ build:
 
 build_release:
 	${DOCKER_RUN_IT} ${RUN_ATTRS} --entrypoint ${CARGO} ${DEV_IMAGE_NAME} build --release
+
+docs:
+	${DOCKER_RUN_IT} ${RUN_ATTRS} --entrypoint ${CARGO} ${DEV_IMAGE_NAME} doc
