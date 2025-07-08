@@ -1,5 +1,5 @@
 # rust-macro-test
-This macro simplifies running multiple tests with less boilerplate code.
+This macro simplifies running multiple unit tests with minimal boilerplate code.
 
 # Examples
 ```rust
