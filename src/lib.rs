@@ -2,23 +2,12 @@
 #[macro_export]
 macro_rules! macro_tests {
 	(
-		$(
-			#[$attr:meta]
-		)+
-		$ft:ident
-		$(,
-			$(($test_name:ident, $($ex:expr),* $(,)? )),* $(,)?
-		)?
-	) => {
-		$(
-			$(
-				#[$attr]
-				fn $test_name() {
-					$ft($($ex),*);
-				}
-			)*
-		)?
-	};
+		$ft:ident $(,)?
+	) => {};
+	(
+		attrs = [ $(#[$attr:meta])+ ],
+		$ft:ident $(,)?
+	) => {};
 	(
 		$ft:ident
 		$(,
@@ -34,6 +23,30 @@ macro_rules! macro_tests {
 			)*
 		)?
 	};
+	(
+		attrs = [ #[$attr:meta] ],
+		$ft:ident,
+		$(($test_name:ident, $($ex:expr),* $(,)? )),+ $(,)?
+	) => {
+		$(
+			#[$attr]
+			fn $test_name() {
+				$ft($($ex),*);
+			}
+		)*
+	};
+	(
+		attrs = [ $(#[$attr:meta])+ ],
+		$ft:ident,
+		$(($test_name:ident, $($ex:expr),* $(,)? )),+ $(,)?
+	) => {
+		$(
+			#[$attr]
+			fn $test_name() {
+				$ft($($ex),*);
+			}
+		)*
+	}
 }
 
 #[cfg(test)]

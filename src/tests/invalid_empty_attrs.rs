@@ -8,8 +8,6 @@ fn my_test_function(arg1: i32, arg2: i32) {
 }
 
 macro_tests!(
-	attrs = [ #[foo] ],
-	my_test_function,
-	(test_1, 1, 1),
-	(test_2, 1 + 1 - 2 + 2, 2)
+	attrs = [],
+	my_test_function
 );

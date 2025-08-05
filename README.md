@@ -17,7 +17,7 @@ macro_tests!(
 );
 ```
 
-You may also add you custom attribute to the generated tests:
+You may also add you custom attribute(s) to the generated tests:
 
 ```rust
 use macro_test::macro_tests;
@@ -28,7 +28,28 @@ fn my_test_function(arg1: i32, arg2: i32) {
 }
 
 macro_tests!(
-    #[test]
+    attrs = [
+        #[test]
+    ],
+    my_test_function,
+    (test_1, 1, 1),
+    (test_2, 1 + 1 - 2 + 2, 2)
+);
+```
+
+```rust
+use macro_test::macro_tests;
+
+#[cfg(test)]
+fn my_test_function(arg1: i32, arg2: i32) {
+    assert_eq!(arg1, arg2);
+}
+
+macro_tests!(
+    attrs = [
+        #[test]
+        #[cfg(test)]
+    ],
     my_test_function,
     (test_1, 1, 1),
     (test_2, 1 + 1 - 2 + 2, 2)

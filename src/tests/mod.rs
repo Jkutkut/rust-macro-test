@@ -94,10 +94,14 @@ macro_tests!(
 	test_invalid_compilation,
 	(invalid_dupped_test, "src/tests/invalid_dupped_test.rs", &[ "`test_1`", "defined multiple times"]),
 	(invalid_attr, "src/tests/invalid_attr.rs", &[ "`foo`", "attribute", "in this scope"]),
+	(invalid_empty_attrs, "src/tests/invalid_empty_attrs.rs", &[ "while trying to match `#`", "no rules expected `]`"]),
 );
 
 macro_tests!(
 	test_valid_compilation,
-	(valid_functions, "src/tests/valid_functions.rs", &["2 passed; 0 failed", "test_1 ... ok", "test_2 ... ok"]),
+	(valid_functions, "src/tests/valid_functions.rs", &["4 passed; 0 failed", "test_1 ... ok", "test_2 ... ok"]),
 	(valid_functions_default, "src/tests/valid_functions_default.rs", &["2 passed; 0 failed", "test_1 ... ok", "test_2 ... ok"]),
+	(valid_multiple_attr, "src/tests/valid_multiple_attr.rs", &["2 passed; 0 failed"]),
+	(valid_empty, "src/tests/valid_empty.rs", &["0 passed; 0 failed"]),
+	(valid_empty_default, "src/tests/valid_empty_default.rs", &["0 passed; 0 failed"]),
 );
