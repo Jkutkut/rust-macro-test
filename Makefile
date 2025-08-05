@@ -29,7 +29,7 @@ DEV_IMAGE_NAME = jkutkut/docker4rust
 
 # ****** Docker Containers ******
 stop:
-	docker stop ${DEV_CONTAINER_NAME}
+	docker stop ${DEV_CONTAINER_NAME} -t 2
 
 DEV_ATTRS = --name ${DEV_CONTAINER_NAME} \
 			${RUN_ATTRS}
