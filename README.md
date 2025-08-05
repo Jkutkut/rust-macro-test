@@ -5,18 +5,37 @@ This macro simplifies running multiple unit tests with minimal boilerplate code.
 ```rust
 use macro_test::macro_tests;
 
-#[test]
+#[cfg(test)]
 fn my_test_function(arg1: i32, arg2: i32) {
     assert_eq!(arg1, arg2);
 }
 
-macro_tests!(my_test_function,
+macro_tests!(
+    my_test_function,
     (test_1, 1, 1),
     (test_2, 1 + 1 - 2 + 2, 2)
 );
 ```
 
-The previous code is equivalent to the following:
+You may also add you custom attribute to the generated tests:
+
+```rust
+use macro_test::macro_tests;
+
+#[cfg(test)]
+fn my_test_function(arg1: i32, arg2: i32) {
+    assert_eq!(arg1, arg2);
+}
+
+macro_tests!(
+    #[test]
+    my_test_function,
+    (test_1, 1, 1),
+    (test_2, 1 + 1 - 2 + 2, 2)
+);
+```
+
+The previous code examples are equivalent to the following:
 ```rust
 #[test]
 fn my_test_function(arg1: i32, arg2: i32) {

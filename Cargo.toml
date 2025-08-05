@@ -1,6 +1,6 @@
 [package]
 name = "macro_test"
-version = "1.0.0"
+version = "1.1.0"
 authors = ["jkutkut <45950243+Jkutkut@users.noreply.github.com>"]
 description = "Macro to reduce boilerplate while testing"
 license = "GPL-3.0-or-later"
