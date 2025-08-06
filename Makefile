@@ -52,5 +52,11 @@ build:
 build_release:
 	${DOCKER_RUN_IT} ${RUN_ATTRS} --entrypoint ${CARGO} ${DEV_IMAGE_NAME} build --release
 
+tag:
+	@echo "v$(shell grep -m 1 version Cargo.toml | cut -d '"' -f 2)" > /tmp/rust-macro-test-version.txt
+	@git tag --list | grep -q -v "^$(shell cat /tmp/rust-macro-test-version.txt)$$" || (echo "Error: Tag already exists" && false)
+	@xargs -n 1 git tag < /tmp/rust-macro-test-version.txt
+	@git push --tags
+
 docs:
 	${DOCKER_RUN_IT} ${RUN_ATTRS} --entrypoint ${CARGO} ${DEV_IMAGE_NAME} doc
