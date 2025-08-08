@@ -46,13 +46,38 @@ fn compile(src_file: &str) -> (String, Output) {
 	)
 }
 
+fn run_crate_test(crate_path: &str, expected_outputs: &[&str], expected_warnings: &[&str]) {
+	let output = Command::new("cargo")
+		.args(&["test"])
+		.current_dir(crate_path)
+		.output()
+		.expect("Failed to run test");
+	let stdout = String::from_utf8_lossy(&output.stdout);
+	let stderr = String::from_utf8_lossy(&output.stderr);
+	println!(
+		"###### Output crate {} ######\n### stdout ### \n{}\n### stderr ###\n{}####################\n",
+		crate_path,
+		stdout, stderr
+	);
+	assert!(output.status.success());
+	for output in expected_outputs {
+		println!("Output must contain: {}", output);
+		assert!(stdout.contains(output));
+	}
+	for warning in expected_warnings {
+		println!("Warning must contain: {}", warning);
+		assert!(stderr.contains(warning));
+	}
+}
+
 fn test_invalid_compilation(filename: &str, expected_errors: &[&str]) {
 	ensure_library_exits();
 	let (_, output) = compile(filename);
 	let stdout = String::from_utf8_lossy(&output.stdout);
 	let stderr = String::from_utf8_lossy(&output.stderr);
 	println!(
-		"###### Output ######\n### stdout ### \n{}\n### stderr ###\n{}####################\n",
+		"###### Output {} ######\n### stdout ### \n{}\n### stderr ###\n{}####################\n",
+		filename,
 		stdout, stderr
 	);
 	assert!(!output.status.success());
@@ -62,25 +87,27 @@ fn test_invalid_compilation(filename: &str, expected_errors: &[&str]) {
 	}
 }
 
-fn test_valid_compilation(filename: &str, expected_outputs: &[&str]) {
+fn test_valid_compilation(filename: &str, expected_outputs: &[&str], expected_warnings: &[&str]) {
 	ensure_library_exits();
 	let (filename, output) = compile(filename);
 	let stdout = String::from_utf8_lossy(&output.stdout);
 	let stderr = String::from_utf8_lossy(&output.stderr);
 	println!(
-		"###### Output ######\n### stdout ### \n{}\n### stderr ###\n{}####################\n",
+		"###### Output {} ######\n### stdout ### \n{}\n### stderr ###\n{}####################\n",
+		filename,
 		stdout, stderr
 	);
 	assert!(output.status.success());
 
-	let output = Command::new(filename)
+	let output = Command::new(&filename)
 		.output()
 		.expect("Failed to run test");
 
 	let stdout = String::from_utf8_lossy(&output.stdout);
 	let stderr = String::from_utf8_lossy(&output.stderr);
 	println!(
-		"###### Output ######\n### stdout ### \n{}\n### stderr ###\n{}####################\n",
+		"###### Output {} ######\n### stdout ### \n{}\n### stderr ###\n{}####################\n",
+		filename,
 		stdout, stderr
 	);
 	assert!(output.status.success());
@@ -88,20 +115,46 @@ fn test_valid_compilation(filename: &str, expected_outputs: &[&str]) {
 		println!("Output must contain: {}", output);
 		assert!(stdout.contains(output));
 	}
+	for warning in expected_warnings {
+		println!("Warning must contain: {}", warning);
+		assert!(stderr.contains(warning));
+	}
+}
+
+fn arr2test_results(arr: &[i32]) -> String {
+	let tests_results_order = [
+		"passed", "failed",
+		"ignored", "measured",
+		"filtered"
+	];
+	tests_results_order.iter().enumerate()
+		.map(|(i, v)| format!(
+			"{} {}",
+			if i < arr.len() { arr[i] } else { 0 },
+			v
+		))
+		.collect::<Vec<String>>()
+		.join("; ")
 }
 
 macro_tests!(
-	test_invalid_compilation,
+	ft = test_invalid_compilation,
 	(invalid_dupped_test, "src/tests/invalid_dupped_test.rs", &[ "`test_1`", "defined multiple times"]),
 	(invalid_attr, "src/tests/invalid_attr.rs", &[ "`foo`", "attribute", "in this scope"]),
-	(invalid_empty_attrs, "src/tests/invalid_empty_attrs.rs", &[ "while trying to match `#`", "no rules expected `]`"]),
 );
 
 macro_tests!(
-	test_valid_compilation,
-	(valid_functions, "src/tests/valid_functions.rs", &["4 passed; 0 failed", "test_1 ... ok", "test_2 ... ok"]),
-	(valid_functions_default, "src/tests/valid_functions_default.rs", &["2 passed; 0 failed", "test_1 ... ok", "test_2 ... ok"]),
-	(valid_multiple_attr, "src/tests/valid_multiple_attr.rs", &["2 passed; 0 failed"]),
-	(valid_empty, "src/tests/valid_empty.rs", &["0 passed; 0 failed"]),
-	(valid_empty_default, "src/tests/valid_empty_default.rs", &["0 passed; 0 failed"]),
+	ft = test_valid_compilation,
+	(valid_functions, "src/tests/valid_functions.rs", &[&arr2test_results(&[9]), "test_1 ... ok", "test_2 ... ok"], &[]),
+	(valid_functions_default, "src/tests/valid_functions_default.rs", &[&arr2test_results(&[2]), "test_1 ... ok", "test_2 ... ok"], &[]),
+	(valid_multiple_attr, "src/tests/valid_multiple_attr.rs", &[&arr2test_results(&[4])], &[]),
+	(valid_empty, "src/tests/valid_empty.rs", &[&arr2test_results(&[])], &[]),
+	(valid_empty_default, "src/tests/valid_empty_default.rs", &[&arr2test_results(&[])], &[]),
+	(valid_ft_args, "src/tests/valid_ft_args.rs", &[&arr2test_results(&[36])], &[]),
+	(valid_empty_attrs, "src/tests/valid_empty_attrs.rs", &[&arr2test_results(&[])], &[]),
+);
+
+macro_tests!(
+	ft = run_crate_test,
+	(crate_async, "src/tests/async", &[], &[]),
 );

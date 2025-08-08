@@ -3,7 +3,7 @@ This macro simplifies running multiple unit tests with minimal boilerplate code.
 
 # Examples
 ```rust
-use macro_test::macro_tests;
+use macro_test::*;
 
 #[cfg(test)]
 fn my_test_function(arg1: i32, arg2: i32) {
@@ -11,7 +11,7 @@ fn my_test_function(arg1: i32, arg2: i32) {
 }
 
 macro_tests!(
-    my_test_function,
+    ft = my_test_function,
     (test_1, 1, 1),
     (test_2, 1 + 1 - 2 + 2, 2)
 );
@@ -20,7 +20,7 @@ macro_tests!(
 You may also add you custom attribute(s) to the generated tests:
 
 ```rust
-use macro_test::macro_tests;
+use macro_test::*;
 
 #[cfg(test)]
 fn my_test_function(arg1: i32, arg2: i32) {
@@ -31,14 +31,14 @@ macro_tests!(
     attrs = [
         #[test]
     ],
-    my_test_function,
+    ft = my_test_function,
     (test_1, 1, 1),
     (test_2, 1 + 1 - 2 + 2, 2)
 );
 ```
 
 ```rust
-use macro_test::macro_tests;
+use macro_test::*;
 
 #[cfg(test)]
 fn my_test_function(arg1: i32, arg2: i32) {
@@ -47,10 +47,10 @@ fn my_test_function(arg1: i32, arg2: i32) {
 
 macro_tests!(
     attrs = [
-        #[test]
+        #[test],
         #[cfg(test)]
     ],
-    my_test_function,
+    ft = my_test_function,
     (test_1, 1, 1),
     (test_2, 1 + 1 - 2 + 2, 2)
 );
